@@ -111,6 +111,7 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 		
 		'pieLabels', // whether to show labels in the pie chart, defaults to true
 		'piePercentage', // whether to show calculated percentages in pie chart, default to false
+		'pieExploded', // whether to draw pie graph in exploded state
 	);
 	
 	/** Valid chart types */
@@ -124,7 +125,6 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 		'barOverlayed',
 		'pie',
 		'pie3d',
-		'pieExploded',
 	);
 	
 	/** Default values for flags */
@@ -173,6 +173,7 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 			
 			'pieLabels' => false,
 			'piePercentages' => true,
+			'pieExploded' => false,
 		);
 	}
 
@@ -213,7 +214,7 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 				// validate and process alignment
 				if (!in_array($val, array('left', 'right', 'center')))
 					unset($flags[$key]);
-			} else if ($key == 'grid' || $key == 'legend' || $key == 'shadow' || $key == 'ticks' || $key == 'pieLabels' || $key == 'piePercentages') {
+			} else if ($key == 'grid' || $key == 'legend' || $key == 'shadow' || $key == 'ticks' || $key == 'pieLabels' || $key == 'piePercentages' || $key == 'pieExploded') {
 				// validate and process boolean settings
 				if ($val == 'true' || $val == '1' || $val == 'on')
 					$flags[$key] = true;
@@ -538,7 +539,7 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 			(int)($this->flags['size']['height'] / 2),
 		);
 		$radius = min($center[0], $center[1]) - 40;
-		if ($this->flags['type'] == 'pieExploded')
+		if ($this->flags['pieExploded'])
 			$radius -= 20;
 
 		// draw legend
@@ -557,19 +558,21 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 			$labeltype = PIE_LABELS;
 		else if ($this->flags['piePercentages'])
 			$labeltype = PIE_PERCENTAGE;
+		if ($this->flags['shadow'])
+			$pchart->setShadowProperties(3,3,$this->flags['shadowColor'][0],$this->flags['shadowColor'][1],$this->flags['shadowColor'][2], 30, 4);
 		switch ($this->flags['type']) {
 			case 'pie':
-				$pchart->drawBasicPieGraph($pdata->GetData(), $pdata->GetDataDescription(), $center[0], $center[1], $radius, $labeltype);
+				if ($this->flags['pieExploded']) {
+					$pchart->drawFlatPieGraphWithShadow($pdata->GetData(), $pdata->GetDataDescription(), $center[0], $center[1], $radius, $labeltype, 10, $this->flags['decimals']);
+				} else {
+					$pchart->drawBasicPieGraph($pdata->GetData(), $pdata->GetDataDescription(), $center[0], $center[1], $radius, $labeltype, 255, 255, 255, $this->flags['decimals']);	
+				}
 				break;
 			case 'pie3d':
-				$pchart->drawPieGraph($pdata->GetData(), $pdata->GetDataDescription(), $center[0], $center[1], $radius, $labeltype);
-				break;
-			case 'pieExploded':
-				$pchart->setShadowProperties(3,3,$this->flags['shadowColor'][0],$this->flags['shadowColor'][1],$this->flags['shadowColor'][2], 30, 4);
-				$pchart->drawFlatPieGraphWithShadow($pdata->GetData(), $pdata->GetDataDescription(), $center[0], $center[1], $radius, $labeltype, 10, $this->flags['decimals']);
-				$pchart->clearShadow();
+				$pchart->drawPieGraph($pdata->GetData(), $pdata->GetDataDescription(), $center[0], $center[1], $radius, $labeltype, true, 60, 20, (($this->flags['pieExploded']) ? 10 : 0), $this->flags['decimals']);
 				break;
 		}
+		$pchart->clearShadow();
 		
 		// draw title
 		if (isset($this->flags['title'])) {
