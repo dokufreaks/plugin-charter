@@ -19,7 +19,47 @@ require_once(DOKU_PLUGIN.'charter/lib/pchart/pChart.class.php');
 
 class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 
-	/** Flags */
+    function getInfo() {
+        return array (
+            'author' => 'Gina Haeussge',
+            'email' => 'osd@foosel.net',
+            'date' => @file_get_contents(DOKU_PLUGIN.'charter/VERSION'),
+            'name' => 'Charter Plugin (helper component)',
+            'desc' => 'Renders customized charts using the pChart library',
+            'url' => 'http://foosel.org/snippets/dokuwiki/charter',
+        );
+    }
+
+    function getMethods() {
+        $result = array ();
+        $result[] = array (
+            'name' => 'setFlags',
+            'desc' => 'sets the flags to use',
+            'params' => array(
+            	'flags' => 'array',
+            ),
+        );
+        $result[] = array (
+            'name' => 'setData',
+            'desc' => 'sets the data to use',
+            'params' => array (
+                'data' => 'array',
+            ),
+        );
+        $result[] = array (
+            'name' => 'render',
+            'desc' => 'renders the chart into the given file',
+            'params' => array (
+                'filename' => 'string',
+            ),
+            'return' => array (
+                'success' => 'boolean'
+            ),
+        );
+        return $result;
+    }
+    
+    /** Flags */
 	var $flags;
 	
 	/** Chart data */
@@ -261,7 +301,7 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 	 * Renders the graph into given file.
 	 * 
 	 * @param filename the file to render to
-	 * @return boolean false on failure
+	 * @return true on success, false on failure
 	 * 
 	 * @author Gina Häußge <osd@foosel.net>
 	 */
@@ -272,10 +312,12 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 		// parse input data
 		$csv = $this->_parseCsv($this->data);
 		if (!$csv)
-			return;
+			return false;
 		
 		// create pData instance
 		$pdata = $this->_createGraphData($csv);
+		if (!$pdata)
+			return false;
 		
 		// prepare pChart instance based on graph type
 		switch ($this->flags['type']) {
@@ -295,9 +337,14 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 				$chart = $this->_createPieGraph($pdata);
 				break;
 		}
+		if (!$chart)
+			return false;
 		
 		// render graph into file
-		$chart->Render($filename);
+		if (!$chart->Render($filename))
+			return false;
+		
+		return true;
 	}
 	
 	/**

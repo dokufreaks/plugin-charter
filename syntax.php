@@ -20,7 +20,7 @@ class syntax_plugin_charter extends DokuWiki_Syntax_Plugin {
         return array (
             'author' => 'Gina Haeussge',
             'email' => 'osd@foosel.net',
-            'date' => '2008-12-21',
+            'date' => @file_get_contents(DOKU_PLUGIN.'charter/VERSION'),
             'name' => 'Charter Plugin (syntax component)',
             'desc' => 'Renders customized charts using the pChart library',
             'url' => 'http://foosel.org/snippets/dokuwiki/charter',
