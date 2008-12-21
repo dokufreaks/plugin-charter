@@ -540,7 +540,7 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 		);
 		$radius = min($center[0], $center[1]) - 40;
 		if ($this->flags['pieExploded'])
-			$radius -= 20;
+			$radius -= 10;
 
 		// draw legend
 		$pchart->setFontProperties($this->flags['fontDefault']['name'], $this->flags['fontDefault']['size']);
