@@ -16,7 +16,6 @@ if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC.'lib/plugins/');
 
 require_once(DOKU_PLUGIN.'charter/lib/pchart/pData.class.php');
 require_once(DOKU_PLUGIN.'charter/lib/pchart/pChart.class.php');
-require_once(DOKU_PLUGIN.'charter/lib/parsecsv.lib.php');
 
 class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 
