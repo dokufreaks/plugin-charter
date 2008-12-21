@@ -110,7 +110,7 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 		'palette', // color palette to use
 		
 		'pieLabels', // whether to show labels in the pie chart, defaults to true
-		'piePercentage', // whether to show calculated percentages in pie chart, default to false
+		'piePercentages', // whether to show calculated percentages in pie chart, default to false
 		'pieExploded', // whether to draw pie graph in exploded state
 	);
 	
