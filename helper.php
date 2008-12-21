@@ -465,10 +465,10 @@ class helper_plugin_charter extends DokuWiki_Plugin { // DokuWiki_Helper_Plugin
 		}
 		
 		// draw graph
-		if ($this->flags['dots'])
-			$pchart->drawPlotGraph($pdata->GetData(), $pdata->GetDataDescription(), $this->flags['dots']);
 		if ($this->flags['shadow'] && in_array($this->flags['type'], array('line', 'lineFilled', 'cubic', 'cubicFilled')))
 			$pchart->setShadowProperties(3,3,$this->flags['shadowColor'][0],$this->flags['shadowColor'][1],$this->flags['shadowColor'][2],30,4);
+		if ($this->flags['dots'])
+			$pchart->drawPlotGraph($pdata->GetData(), $pdata->GetDataDescription(), $this->flags['dots']);
 		switch ($this->flags['type']) {
 			case 'line':
 				$pchart->drawLineGraph($pdata->GetData(), $pdata->GetDataDescription());
